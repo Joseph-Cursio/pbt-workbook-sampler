@@ -4,7 +4,7 @@
 
 The round-trip is the highest-yield property shape there is: if a function has an
 inverse, `inverse(f(x)) == x` catches an enormous class of bugs for one line of
-thought.
+thought — here, `decompress(compress(x)) == x`.
 
 ```swift
 protocol RunLengthCodec {
