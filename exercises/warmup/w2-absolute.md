@@ -17,4 +17,4 @@ Absolute value is non-negative **and** equals either the input or its negation.
 A property can be a conjunction — each clause narrows what "correct" means. The
 hidden bug violates one of them. Run it; read which input exposes it.
 
-**You'll know it worked when:** `killed 1/1`, broken by a negative input.
+**You'll know it worked when:** `detected 1/1`, broken by a negative input.

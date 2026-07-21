@@ -1,8 +1,8 @@
 //  main.swift — the reader-facing loop: grade every submission, print feedback.
 //
 //  Run:  make grade
-//  Write a property in Submissions.swift, run this, read the mutant-kill grade
-//  and survivor list. This is the FREE sampler — Warm-up + Set 1.
+//  Write a property in Submissions.swift, run this, read the defect-detection grade
+//  and undetected list. This is the FREE sampler — Warm-up + Set 1.
 
 import WorkbookExercises
 import WorkbookGraderSwift
@@ -42,10 +42,10 @@ extension Grade {
     func readerHint() -> String {
         switch strength {
         case .overStrong:     return "OVER-STRONG"
-        case .noMutants:      return "no mutants"
-        case .nonRefutable:   return "not refutable — \(survivors.count) survivors"
-        case .weak:           return "WEAK — \(killed.count)/\(mutantsTotal) killed"
-        case .characterizing: return "\(killed.count)/\(mutantsTotal) killed"
+        case .noDefects:      return "no defects"
+        case .nonRefutable:   return "not refutable — \(undetected.count) undetected defects"
+        case .weak:           return "WEAK — \(detected.count)/\(defectsTotal) detected"
+        case .characterizing: return "\(detected.count)/\(defectsTotal) detected"
         }
     }
 }

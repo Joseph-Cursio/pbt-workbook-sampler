@@ -3,7 +3,7 @@
 //  The mechanics, not the thinking. The reader is *handed* a correct property
 //  and a broken function; the job is to run it and read the shrunk
 //  counterexample. Each corpus here has a correct reference and exactly ONE
-//  obvious mutant, so the grade shows a single kill with its reproduction.
+//  obvious defect, so the grade shows a single detect with its reproduction.
 
 import WorkbookGraderCore
 
@@ -68,8 +68,8 @@ public enum Warmup {
         Corpus(
             name: "Warm-up W1 · reverse round-trip",
             reference: CorrectReverser(),
-            mutants: [
-                Mutant(id: "reverse.drops-last",
+            defects: [
+                Defect(id: "reverse.drops-last",
                        explanation: "reverses but drops the last element",
                        subject: DroppingReverser())
             ]
@@ -80,8 +80,8 @@ public enum Warmup {
         Corpus(
             name: "Warm-up W2 · absolute value",
             reference: CorrectAbsoluter(),
-            mutants: [
-                Mutant(id: "abs.identity",
+            defects: [
+                Defect(id: "abs.identity",
                        explanation: "returns the input unchanged; negatives stay negative",
                        subject: IdentityAbsoluter())
             ]
@@ -92,8 +92,8 @@ public enum Warmup {
         Corpus(
             name: "Warm-up W3 · clamp",
             reference: CorrectClamper(),
-            mutants: [
-                Mutant(id: "clamp.no-upper-bound",
+            defects: [
+                Defect(id: "clamp.no-upper-bound",
                        explanation: "applies the lower bound but never the upper bound",
                        subject: HalfClamper())
             ]

@@ -14,12 +14,12 @@ protocol RunLengthCodec {
 ```
 
 **Write the property** in `Submissions.swift` (`runLengthRoundTrip`). The
-placeholder returns `true` and kills nothing — replace it with the law that says
+placeholder returns `true` and detects nothing — replace it with the law that says
 compressing then decompressing gets you back where you started.
 
-Three mutants hide in the corpus: one drops single-element runs, one is off by
+Three defects hide in the corpus: one drops single-element runs, one is off by
 one on the counts, one loses the *order* of interleaved values. A real round-trip
-law kills all three. If one survives, ask what your law fails to observe about
+law detects all three. If one goes undetected, ask what your law fails to observe about
 the result — its length? its element values? its **order**?
 
-**Target:** `killed 3/3`, no survivors.
+**Target:** `detected 3/3`, no undetected defects.

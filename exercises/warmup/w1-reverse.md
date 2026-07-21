@@ -20,5 +20,5 @@ bug. Run `make grade` and read the **counterexample** — the shrunk input that
 proves the bug. Notice how small it is: the grader shrinks a failing case down to
 the least input that still fails, so you debug the essence, not the noise.
 
-**You'll know it worked when:** the grade shows `killed 1/1`, and a short list
+**You'll know it worked when:** the grade shows `detected 1/1`, and a short list
 under "first broken by".

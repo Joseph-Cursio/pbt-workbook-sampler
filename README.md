@@ -2,9 +2,9 @@
 
 A taste of the **auto-graded exercise lab** for property-based testing. You write
 a property; a machine tries to break it. Your law runs against a corpus of buggy
-kernel variants (*mutants*) and the grade is behavioral:
+kernel variants (*defects*) and the grade is behavioral:
 
-> *you killed 7/9 mutants — here are the two survivors and why.*
+> *you detected 7/9 defects — here are the two that went undetected and why.*
 
 This repo is the **free sampler**: the Warm-up + Set 1 (round-trips). It's the
 whole loop, end to end, on the gentlest sets — enough to feel whether an
@@ -14,7 +14,7 @@ executable, refutable exercise teaches you something a worked example can't.
 
 ```
 make grade      # build + grade every submission, print feedback
-make test       # the answer key: every corpus here is fully killable
+make test       # the answer key: every corpus here is fully detectable
 ```
 
 Open `Sources/WorkbookExercises/Submissions.swift`, write a property, re-run.
@@ -27,13 +27,13 @@ Start at `exercises/README.md`.
 ## What's here — and what isn't
 
 - **Here:** the grader (a language-neutral core + a Swift binding), the Warm-up
-  and Set 1 kernels, and their mutants. Everything is public. These mutants are
+  and Set 1 kernels, and their defects. Everything is public. These defects are
   the *free sample* — read them all you like.
 - **Not here:** the full product's private grading corpora. The paid lab adds
   **Sets 2–10** — conformance laws, generators, metamorphic testing, shapeless
   bugs (banker's rounding, dropped separators), value semantics, model-based
   command sequences, idempotency — and a **"prove it can't be proven" capstone**.
-  Their mutants stay secret, because a public answer key is just a solutions
+  Their defects stay secret, because a public answer key is just a solutions
   manual next to the exam.
 
 ## Engine-only

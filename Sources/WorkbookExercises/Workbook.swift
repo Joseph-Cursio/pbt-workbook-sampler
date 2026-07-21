@@ -1,7 +1,7 @@
 //  Workbook.swift — the provided generators and the sampler's exercise registry.
 //
 //  Sampler scope: Warm-up (W1–W3) + Set 1 (S1.1–S1.2) only. No Set 3, no lift,
-//  no secret mutants — those live in the full, paid product.
+//  no secret defects — those live in the full, paid product.
 
 import PropertyBased
 import WorkbookGraderSwift

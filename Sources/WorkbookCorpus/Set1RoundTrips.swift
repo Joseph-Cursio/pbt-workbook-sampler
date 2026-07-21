@@ -2,9 +2,9 @@
 //
 //  The template that gives the most bugs per line of thought:
 //  `decode(encode(x)) == x`. Now the reader writes the law; the generator is
-//  provided. Each corpus carries several mutants — asymmetric encoders and
+//  provided. Each corpus carries several defects — asymmetric encoders and
 //  dropped-field bugs — so a weak property (one that checks, say, only length)
-//  leaves survivors and earns a survivor list.
+//  leaves undetected defects and earns an undetected list.
 
 import WorkbookGraderCore
 
@@ -65,7 +65,7 @@ struct OffByOneRunLength: RunLengthCodec {
 
 /// The bug: groups equal values *globally* instead of by adjacent run, so any
 /// interleaving (e.g. `[0, 1, 0]`) is reordered and the round-trip is lost.
-/// A classic real RLE mistake. (Survives any property that ignores element
+/// A classic real RLE mistake. (Goes undetected by any property that ignores element
 /// *order* — e.g. one that compares sorted results or multisets.)
 struct MergesNonAdjacentRunLength: RunLengthCodec {
     func compress(_ input: [Int]) -> [Run] {
@@ -129,14 +129,14 @@ public enum Set1 {
         Corpus(
             name: "Set 1 · S1.1 run-length round-trip",
             reference: CorrectRunLength(),
-            mutants: [
-                Mutant(id: "rle.drops-singletons",
+            defects: [
+                Defect(id: "rle.drops-singletons",
                        explanation: "compressor drops runs of length 1",
                        subject: DropsSingletonsRunLength()),
-                Mutant(id: "rle.off-by-one",
+                Defect(id: "rle.off-by-one",
                        explanation: "decompressor emits count-1 copies per run",
                        subject: OffByOneRunLength()),
-                Mutant(id: "rle.merges-non-adjacent",
+                Defect(id: "rle.merges-non-adjacent",
                        explanation: "groups equal values globally, losing interleaving order",
                        subject: MergesNonAdjacentRunLength())
             ]
@@ -147,11 +147,11 @@ public enum Set1 {
         Corpus(
             name: "Set 1 · S1.2 CSV round-trip",
             reference: CorrectCSV(),
-            mutants: [
-                Mutant(id: "csv.empty-becomes-zero",
+            defects: [
+                Defect(id: "csv.empty-becomes-zero",
                        explanation: "empty list decodes back to [0]",
                        subject: EmptyBugCSV()),
-                Mutant(id: "csv.dash-separator",
+                Defect(id: "csv.dash-separator",
                        explanation: "uses '-' as separator, colliding with minus signs",
                        subject: DashSeparatorCSV())
             ]

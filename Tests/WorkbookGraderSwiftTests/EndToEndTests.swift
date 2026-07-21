@@ -1,8 +1,8 @@
 //  EndToEndTests.swift — the sampler's answer key.
 //
 //  Proves the free slice grades correctly through the real engine: the Warm-up
-//  and Set 1 corpora are fully killable by a correct property, and the Set 1
-//  starters leave the full survivor list.
+//  and Set 1 corpora are fully detectable by a correct property, and the Set 1
+//  starters leave the full undetected list.
 
 import Testing
 import PropertyBased
@@ -13,7 +13,7 @@ import WorkbookExercises
 @Suite("Sampler end-to-end grading")
 struct EndToEndTests {
 
-    @Test("Set 1 · run-length: correct round-trip kills every mutant")
+    @Test("Set 1 · run-length: correct round-trip detects every defect")
     func runLengthAnswerKey() {
         let property = Property<[Int], any RunLengthCodec>("round-trip") { input, codec in
             codec.decompress(codec.compress(input)) == input
@@ -24,7 +24,7 @@ struct EndToEndTests {
         #expect(grade.passed, Comment(rawValue: grade.render()))
     }
 
-    @Test("Set 1 · CSV: correct round-trip kills every mutant")
+    @Test("Set 1 · CSV: correct round-trip detects every defect")
     func csvAnswerKey() {
         let property = Property<[Int], any IntListCSVCodec>("round-trip") { input, codec in
             codec.decode(codec.encode(input)) == input
@@ -35,22 +35,22 @@ struct EndToEndTests {
         #expect(grade.passed, Comment(rawValue: grade.render()))
     }
 
-    @Test("Warm-up starters are correct and each kills its one mutant")
-    func warmupStartersKill() {
+    @Test("Warm-up starters are correct and each detects its one defect")
+    func warmupStartersDetect() {
         let reverse = Warmup.reverse.grade(with: Submissions.reverseRoundTrip,
                                            using: Gen.int(in: -20...20).array(of: 0...6))
         #expect(reverse.passed)
-        #expect(reverse.killed.count == 1)
-        #expect(reverse.killed.first?.counterexample != nil)
+        #expect(reverse.detected.count == 1)
+        #expect(reverse.detected.first?.counterexample != nil)
     }
 
-    @Test("every reader-authored starter leaves all its mutants alive")
-    func startersLeaveSurvivors() {
+    @Test("every reader-authored starter leaves all its defects undetected")
+    func startersLeaveUndetectedDefects() {
         for exercise in Workbook.allExercises where exercise.readerAuthored {
             let grade = exercise.grade()
             #expect(grade.referenceHeld, "\(exercise.id) reference should hold")
-            #expect(grade.killed.isEmpty, "\(exercise.id) starter should kill nothing")
-            #expect(!grade.survivors.isEmpty, "\(exercise.id) should list survivors")
+            #expect(grade.detected.isEmpty, "\(exercise.id) starter should detect nothing")
+            #expect(!grade.undetected.isEmpty, "\(exercise.id) should list undetected defects")
         }
     }
 
@@ -62,6 +62,6 @@ struct EndToEndTests {
         let generator = Gen.int(in: 0...3).array(of: 0...8)
         let first = Set1.runLength.grade(with: property, using: generator, count: 100)
         let second = Set1.runLength.grade(with: property, using: generator, count: 100)
-        #expect(first.killed.map(\.counterexample) == second.killed.map(\.counterexample))
+        #expect(first.detected.map(\.counterexample) == second.detected.map(\.counterexample))
     }
 }

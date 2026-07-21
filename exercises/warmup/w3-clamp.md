@@ -18,7 +18,7 @@ low <= result && result <= high
 decides which inputs a property is even asked about. The hidden bug enforces one
 bound but not the other.
 
-**You'll know it worked when:** `killed 1/1`, broken by a `(value, low, high)`
+**You'll know it worked when:** `detected 1/1`, broken by a `(value, low, high)`
 where the value is above `high`.
 
 After this, the training wheels come off: in Set 1 **you** write the law.

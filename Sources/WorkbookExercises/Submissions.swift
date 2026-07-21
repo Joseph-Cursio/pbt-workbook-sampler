@@ -1,8 +1,8 @@
 //  Submissions.swift — THIS IS THE FILE YOU EDIT.
 //
 //  The free sampler: Warm-up (handed to you) + Set 1 (you write the property).
-//  Run `make grade`, read the mutant-kill grade, strengthen, re-run. When you've
-//  killed every mutant in Set 1, you've done the thing the full workbook drills
+//  Run `make grade`, read the defect-detection grade, strengthen, re-run. When you've
+//  detected every defect in Set 1, you've done the thing the full workbook drills
 //  across eleven more sets — round-trips, algebraic laws, metamorphic tests,
 //  model-based sequences, and a "prove it can't be proven" capstone.
 
