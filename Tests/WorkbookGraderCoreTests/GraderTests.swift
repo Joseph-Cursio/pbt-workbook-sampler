@@ -82,6 +82,33 @@ struct GraderTests {
         #expect(grade.render().contains("over-strong"))
     }
 
+    @Test("strength classifies the ratchet: over-strong / non-refutable / weak / characterizing")
+    func strengthClassification() {
+        let corpus = doublingCorpus()
+        var source = ListSource(values: [1, 2, 3])
+
+        // Characterizing — kills the whole corpus.
+        let full = Property<Int, Doubler>("f(x) == 2x") { $1.apply($0) == $0 * 2 }
+        #expect(corpus.grade(with: full, drawing: &source, count: 9).strength == .characterizing)
+
+        // Non-refutable — holds, kills nothing.
+        var trivialSource = ListSource(values: [1, 2, 3])
+        let trivial = Property<Int, Doubler>("true") { _, _ in true }
+        #expect(corpus.grade(with: trivial, drawing: &trivialSource, count: 9).strength == .nonRefutable)
+
+        // Weak — kills the identity mutant (result != input) but not off-by-one.
+        var weakSource = ListSource(values: [1, 2, 3])
+        let weak = Property<Int, Doubler>("f(x) != x") { $1.apply($0) != $0 }
+        let weakGrade = corpus.grade(with: weak, drawing: &weakSource, count: 9)
+        #expect(weakGrade.strength == .weak)
+        #expect(weakGrade.strengthHeadline.contains("true but weak"))
+
+        // Over-strong — fails on the reference.
+        var overStrongSource = ListSource(values: [1, 2, 3])
+        let overStrong = Property<Int, Doubler>("f(x) == x") { $1.apply($0) == $0 }
+        #expect(corpus.grade(with: overStrong, drawing: &overStrongSource, count: 9).strength == .overStrong)
+    }
+
     @Test("killed mutants carry a reproducing counterexample")
     func killsRecordCounterexample() {
         let corpus = doublingCorpus()

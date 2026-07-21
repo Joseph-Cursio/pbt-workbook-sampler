@@ -77,41 +77,86 @@ public struct Grade {
         referenceHeld && survivors.isEmpty && mutantsTotal > 0
     }
 
-    /// The reader-facing feedback string — the pedagogical payload.
+    /// Where a property sits on the strength ratchet — the axis the workbook
+    /// grades *beyond* pass/fail (planning/workbook-contracts-and-strength.md).
+    /// A property can be *true* yet weak: it holds on correct code but lets
+    /// broken implementations pass. Strength is how much of the corpus it
+    /// characterizes.
+    public enum Strength {
+        /// Fails on the correct implementation — rejects valid code.
+        case overStrong
+        /// Holds, but the corpus has nothing to distinguish (a negative/honest
+        /// rep — the trap is "killing" a mutant that isn't there).
+        case noMutants
+        /// Holds and never fails — kills nothing. Not yet refutable.
+        case nonRefutable
+        /// Holds and kills some, but broken implementations still pass.
+        case weak
+        /// Holds and kills every mutant — a characterizing property.
+        case characterizing
+    }
+
+    public var strength: Strength {
+        if !referenceHeld { return .overStrong }
+        if mutantsTotal == 0 { return .noMutants }
+        if killed.isEmpty { return .nonRefutable }
+        if survivors.isEmpty { return .characterizing }
+        return .weak
+    }
+
+    /// The ratchet as one sentence — "true but weak, N still pass" and kin.
+    public var strengthHeadline: String {
+        switch strength {
+        case .overStrong:
+            return "over-strong — it rejects correct code"
+        case .noMutants:
+            return "no mutants here — nothing to distinguish (an honest-silence rep)"
+        case .nonRefutable:
+            return "not yet refutable — it holds, but kills nothing"
+        case .weak:
+            let stillPass = survivors.count == 1 ? "1 broken implementation still passes"
+                                                 : "\(survivors.count) broken implementations still pass"
+            return "true but weak — killed \(killed.count) of \(mutantsTotal); \(stillPass)"
+        case .characterizing:
+            return "characterizing — killed all \(mutantsTotal); nothing broken survives"
+        }
+    }
+
+    /// The reader-facing feedback string — the pedagogical payload. Leads with
+    /// the strength verdict so the reader grades the *ratchet*, not a binary.
     public func render() -> String {
         var out = ""
         out += "\(corpusName) — property “\(propertyName)”\n"
 
         guard referenceHeld else {
-            out += "  ✗ Your property does not hold on the correct implementation.\n"
+            out += "  ✗ \(strengthHeadline).\n"
             if let referenceCounterexample {
                 out += "    It rejects a valid input: \(referenceCounterexample)\n"
             }
-            out += "    A property that fails on correct code is over-strong — "
-            out += "loosen it before worrying about mutants.\n"
+            out += "    Loosen it before worrying about mutants — a property that "
+            out += "fails on correct code can't grade anything.\n"
             return out
         }
 
-        out += "  killed \(killed.count)/\(mutantsTotal) mutants"
-        out += " over \(sampleCount) inputs.\n"
+        let settled = strength == .characterizing || strength == .noMutants
+        out += "  \(settled ? "✓" : "✗") \(strengthHeadline)"
+        out += " (over \(sampleCount) inputs).\n"
 
         if !killed.isEmpty {
-            out += "  ✓ caught:\n"
+            out += "  caught:\n"
             for kill in killed {
                 out += "      \(kill.id) — \(kill.explanation)\n"
                 out += "        first broken by: \(kill.counterexample)\n"
             }
         }
 
-        if survivors.isEmpty {
-            out += "  ✓ no survivors — every mutant killed.\n"
-        } else {
-            out += "  ✗ survivors (your property missed these):\n"
+        if !survivors.isEmpty {
+            out += "  survivors (bugs your property would still ship):\n"
             for survivor in survivors {
                 out += "      \(survivor.id) — \(survivor.explanation)\n"
             }
-            out += "    A survivor is a bug your property would ship. "
-            out += "Strengthen the law so it distinguishes this case.\n"
+            out += "    Strengthen the law until none survive — that's the ratchet "
+            out += "from a property that's merely true to one that characterizes.\n"
         }
         return out
     }

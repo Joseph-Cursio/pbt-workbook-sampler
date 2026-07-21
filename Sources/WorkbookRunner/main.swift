@@ -19,7 +19,7 @@ The full lab adds Sets 2–10 and a "prove it can't be proven" capstone.
 var passed = 0
 for exercise in exercises {
     let grade = exercise.grade()
-    let mark = grade.passed ? "PASS" : (grade.readerHint(authored: exercise.readerAuthored))
+    let mark = grade.passed ? "PASS" : grade.readerHint()
     print("[\(exercise.id)] \(exercise.title)  (book \(exercise.chapterRef))  — \(mark)")
     print(indent(grade.render()))
     if grade.passed { passed += 1 }
@@ -38,11 +38,14 @@ func indent(_ text: String) -> String {
 }
 
 extension Grade {
-    /// A short status tag for the header line.
-    func readerHint(authored: Bool) -> String {
-        if !referenceHeld { return "OVER-STRONG" }
-        if mutantsTotal == 0 { return "no mutants" }
-        if authored, killed.isEmpty { return "not refutable — \(survivors.count) survivors" }
-        return "\(killed.count)/\(mutantsTotal) killed"
+    /// A short status tag for the header line — the strength verdict in a word.
+    func readerHint() -> String {
+        switch strength {
+        case .overStrong:     return "OVER-STRONG"
+        case .noMutants:      return "no mutants"
+        case .nonRefutable:   return "not refutable — \(survivors.count) survivors"
+        case .weak:           return "WEAK — \(killed.count)/\(mutantsTotal) killed"
+        case .characterizing: return "\(killed.count)/\(mutantsTotal) killed"
+        }
     }
 }
