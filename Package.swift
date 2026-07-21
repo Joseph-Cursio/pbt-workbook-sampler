@@ -10,46 +10,37 @@ import PackageDescription
 // appear here. See the private pbt-workbook repo and the book's
 // planning/workbook-repo-topology.md.
 //
-// The grader machinery (Core + Swift binding) is deliberately public — it's
-// infrastructure, not answer key. For the pilot it is vendored (copied) rather
-// than shared via a package dependency; extracting a shared public grader
-// package is post-validation work, like the corpus extraction.
+// The grader machinery (Core + Swift binding) is a shared, public package
+// (`pbt-workbook-grader`), consumed by version — one source of truth, shared with
+// the private product. It's infrastructure, not answer key: it carries no
+// mutants, so it stays public.
 //
-// Engine-only: a submission imports just `PropertyBased`. The sampler doubles as
-// proof the spine needs none of the kit.
+// Engine-only: a submission imports just `PropertyBased` (inherited from the
+// grader package's pin). The sampler doubles as proof the spine needs none of
+// the kit.
 let package = Package(
     name: "pbt-workbook-sampler",
     platforms: [.macOS(.v14)],
     products: [
-        .library(name: "WorkbookGraderCore", targets: ["WorkbookGraderCore"]),
-        .library(name: "WorkbookGraderSwift", targets: ["WorkbookGraderSwift"]),
         .executable(name: "pbt-workbook-sampler", targets: ["WorkbookRunner"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/Joseph-Cursio/pbt-workbook-grader.git",
+                 .upToNextMinor(from: "0.1.0")),
         .package(url: "https://github.com/x-sheep/swift-property-based.git",
                  .upToNextMinor(from: "1.2.0")),
     ],
     targets: [
-        .target(name: "WorkbookGraderCore"),
-        .testTarget(
-            name: "WorkbookGraderCoreTests",
-            dependencies: ["WorkbookGraderCore"]
-        ),
         .target(
             name: "WorkbookCorpus",
-            dependencies: ["WorkbookGraderCore"]
-        ),
-        .target(
-            name: "WorkbookGraderSwift",
             dependencies: [
-                "WorkbookGraderCore",
-                .product(name: "PropertyBased", package: "swift-property-based"),
+                .product(name: "WorkbookGraderCore", package: "pbt-workbook-grader"),
             ]
         ),
         .testTarget(
             name: "WorkbookGraderSwiftTests",
             dependencies: [
-                "WorkbookGraderSwift",
+                .product(name: "WorkbookGraderSwift", package: "pbt-workbook-grader"),
                 "WorkbookCorpus",
                 "WorkbookExercises",
                 .product(name: "PropertyBased", package: "swift-property-based"),
@@ -58,14 +49,17 @@ let package = Package(
         .target(
             name: "WorkbookExercises",
             dependencies: [
-                "WorkbookGraderSwift",
+                .product(name: "WorkbookGraderSwift", package: "pbt-workbook-grader"),
                 "WorkbookCorpus",
                 .product(name: "PropertyBased", package: "swift-property-based"),
             ]
         ),
         .executableTarget(
             name: "WorkbookRunner",
-            dependencies: ["WorkbookExercises", "WorkbookGraderSwift"]
+            dependencies: [
+                "WorkbookExercises",
+                .product(name: "WorkbookGraderSwift", package: "pbt-workbook-grader"),
+            ]
         ),
     ]
 )
