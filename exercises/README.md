@@ -9,6 +9,9 @@ buggy ones. Then a machine grades it by trying to break it.
 
 1. Open `Sources/WorkbookExercises/Submissions.swift`.
 2. Find the property for this exercise. Replace the placeholder with your law.
+   *Blank on what law to write? See [finding-a-property.md](finding-a-property.md)
+   — the pre/post/invariant checklist for getting from a bare function to a
+   candidate property.*
 3. Run the grader:
 
    ```
@@ -20,25 +23,30 @@ buggy ones. Then a machine grades it by trying to break it.
 ## Reading a grade
 
 ```
-[S1.1] Run-length round-trip  — 2/3 killed
-    killed 2/3 mutants over 200 inputs.
-    ✓ caught:
+[S1.1] Run-length round-trip  — WEAK — 2/3 killed
+    ✗ true but weak — killed 2 of 3; 1 broken implementation still passes.
+    caught:
         rle.off-by-one — decompressor emits count-1 copies per run
           first broken by: [0, 0, 3, 0, 3, 3, 2, 0]
-    ✗ survivors (your property missed these):
+    survivors (bugs your property would still ship):
         rle.drops-singletons — compressor drops runs of length 1
 ```
 
-- **killed** — mutants your property caught, each with the *smallest input that
+The grade leads with **strength** — where your property sits on the ratchet:
+
+- **caught** — mutants your property killed, each with the *smallest input that
   broke it*. That input is your reproduction; paste it into a scratch test.
-- **survivors** — bugs your property *would have shipped*. A survivor means your
-  law is too weak to tell the correct kernel from that mutant. Strengthen it.
-- **over-strong** — if the grade says your property fails on the *correct*
-  kernel, you've written a law that rejects valid code. Loosen it first.
+- **survivors** — bugs your property *would still ship*. A survivor means your law
+  is too weak to tell the correct kernel from that mutant. Strengthen it.
+- **not refutable** — a law that can never fail (`return true`) kills nothing.
+- **true but weak** — it holds but kills only some mutants; keep strengthening.
+- **characterizing** — it holds and kills the whole corpus. That's a pass.
+- **over-strong** — it fails on the *correct* kernel. You've written a law that
+  rejects valid code; loosen it first.
 
 A property **passes** only when it holds on the correct kernel **and** kills
-every mutant. A law that can never fail (`return true`) kills nothing — that's
-the zero you get for pasting something non-refutable.
+every mutant. Strengthening from "true but weak" to "characterizing" — until no
+mutant survives — is the whole exercise.
 
 ## What to re-read
 
