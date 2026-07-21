@@ -43,7 +43,7 @@ extension Grade {
         switch strength {
         case .overStrong:     return "OVER-STRONG"
         case .noDefects:      return "no defects"
-        case .nonRefutable:   return "not refutable — \(undetected.count) undetected defects"
+        case .nonRefutable:   return "not refutable — \(undetected.count) undetected defect\(undetected.count == 1 ? "" : "s")"
         case .weak:           return "WEAK — \(detected.count)/\(defectsTotal) detected"
         case .characterizing: return "\(detected.count)/\(defectsTotal) detected"
         }
