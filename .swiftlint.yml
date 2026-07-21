@@ -1,0 +1,39 @@
+# SwiftLint Configuration — Properties, Worked
+# Same posture as the book's code/ config: exclude the resolved dependency tree
+# and allow the short math/PBT-idiom names (xs, a, b, lo, hi…) that the exercise
+# prose uses, rather than renaming teaching code to satisfy the linter.
+excluded:
+  - .build
+  - .swiftpm
+  - DerivedData
+included:
+  - Sources
+  - Tests
+# The reader's submission stubs carry TODO markers *on purpose* — resolving them
+# is the exercise. The `todo` rule would flag the assignment itself as a defect.
+disabled_rules:
+  - todo
+# The Xoshiro seed is a 4-word state tuple, so a 4-tuple warns rather than errors.
+large_tuple:
+  warning: 3
+  error: 4
+identifier_name:
+  excluded:
+    - a
+    - b
+    - c
+    - d
+    - f
+    - h
+    - hi
+    - id
+    - lo
+    - m
+    - n
+    - r
+    - s
+    - x
+    - xs
+    - y
+    - ys
+    - z
