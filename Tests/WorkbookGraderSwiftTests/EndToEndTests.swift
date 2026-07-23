@@ -44,12 +44,16 @@ struct EndToEndTests {
         #expect(reverse.detected.first?.counterexample != nil)
     }
 
-    @Test("every reader-authored starter leaves all its defects undetected")
+    @Test("every reader-authored starter leaves work to do")
     func startersLeaveUndetectedDefects() {
+        // Set 1's starters are stubs (`return true`) and detect nothing. The
+        // lift starter (W4) is deliberately different: a real-but-weak
+        // generalization that detects one defect and leaves one — so assert on
+        // undetected defects, not on zero detects. Mirrors the full lab's test.
         for exercise in Workbook.allExercises where exercise.readerAuthored {
             let grade = exercise.grade()
             #expect(grade.referenceHeld, "\(exercise.id) reference should hold")
-            #expect(grade.detected.isEmpty, "\(exercise.id) starter should detect nothing")
+            #expect(!grade.passed, "\(exercise.id) starter should not yet pass")
             #expect(!grade.undetected.isEmpty, "\(exercise.id) should list undetected defects")
         }
     }

@@ -16,6 +16,7 @@ enum ProvidedGenerators {
         .map { value, boundA, boundB in
             (value, min(boundA, boundB), max(boundA, boundB))
         }
+    static let signedInt = Gen.int(in: -50...50)
     static let repeatyList = Gen.int(in: 0...3).array(of: 0...8)
     static let signedList = Gen.int(in: -50...50).array(of: 0...6)
 }
@@ -113,6 +114,13 @@ public enum Workbook {
                 corpus: Warmup.clamp, generator: ProvidedGenerators.clampTriple,
                 property: Submissions.clampInRange,
                 shrink: ProvidedShrinkers.clampTriple),
+            GradedExercise(
+                id: "W4", title: "The lift — generalize a test",
+                chapterRef: "Ch2, Ch18", promptPath: "exercises/warmup/w4-the-lift.md",
+                readerAuthored: true,
+                corpus: Lift.double, generator: ProvidedGenerators.signedInt,
+                property: Submissions.doubleFromExamples,
+                shrink: ProvidedShrinkers.int),
 
             GradedExercise(
                 id: "S1.1", title: "Run-length round-trip",

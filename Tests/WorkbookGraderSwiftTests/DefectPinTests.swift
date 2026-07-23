@@ -52,6 +52,33 @@ private func pin<Input, Subject>(
             sourceLocation: sourceLocation)
 }
 
+/// Pins a defect that has **no sparing input** — one every input catches.
+///
+/// Forcing such a defect into the catching/sparing shape would mean inventing a
+/// sparing input that doesn't exist. A defect violating a *unary* law ("2x+1 is
+/// never 2x") is caught by everything, and that fact is what gets pinned: if
+/// someone weakens it so some input survives, this fails.
+private func pinAlwaysCaught<Input, Subject>(
+    _ corpus: Corpus<Subject>,
+    _ defectID: String,
+    law: (Input, Subject) -> Bool,
+    catching: [Input],
+    sourceLocation: SourceLocation = #_sourceLocation
+) {
+    guard let defect = corpus.defects.first(where: { $0.id == defectID }) else {
+        Issue.record("no defect '\(defectID)' in \(corpus.name)", sourceLocation: sourceLocation)
+        return
+    }
+    for input in catching {
+        #expect(!law(input, defect.subject),
+                "\(defectID) is pinned as always-caught, but \(input) survives it",
+                sourceLocation: sourceLocation)
+        #expect(law(input, corpus.reference),
+                "\(defectID): correct code must survive \(input), or the pin tests nothing",
+                sourceLocation: sourceLocation)
+    }
+}
+
 @Suite("The defect corpus is pinned")
 struct DefectPinTests {
 
@@ -88,6 +115,32 @@ struct DefectPinTests {
             catching: (1, 0, 0),
             // Spared: a value already in range needs no upper bound applied.
             sparing: (0, 0, 1))
+    }
+
+    // MARK: Warm-up W4 · the lift
+
+    private static let doubling: @Sendable (Int, any Doubler) -> Bool = { x, d in
+        d.double(x) == x * 2
+    }
+
+    @Test("W4 · double.plus-one")
+    func doublePlusOne() {
+        // 2x+1 is never 2x, so no input survives it. This is the *easy* half of
+        // the lift — the reader's weak "result is even" law already catches it.
+        pinAlwaysCaught(Lift.double, "double.plus-one", law: Self.doubling,
+                        catching: [0, 1, -1, 9])
+    }
+
+    @Test("W4 · double.abs")
+    func doubleAbs() {
+        pin(Lift.double, "double.abs", law: Self.doubling,
+            // Caught: a negative. This is the entire point of the exercise.
+            catching: -1,
+            // Spared: 2 — and 2 is literally the first row of the example table
+            // the reader is handed, along with 5 and 9. The pin states in
+            // executable form what this rep exists to teach: the bug survives
+            // your examples and dies to your property.
+            sparing: 2)
     }
 
     // MARK: Set 1 · S1.1 run-length
@@ -157,6 +210,7 @@ struct DefectPinTests {
     func everyDefectIsPinned() {
         let pinned: Set<String> = [
             "reverse.drops-last", "abs.identity", "clamp.no-upper-bound",
+            "double.plus-one", "double.abs",
             "rle.drops-singletons", "rle.off-by-one", "rle.merges-non-adjacent",
             "csv.empty-becomes-zero", "csv.dash-separator",
         ]
@@ -164,6 +218,7 @@ struct DefectPinTests {
         known.formUnion(Warmup.reverse.defects.map(\.id))
         known.formUnion(Warmup.absolute.defects.map(\.id))
         known.formUnion(Warmup.clamp.defects.map(\.id))
+        known.formUnion(Lift.double.defects.map(\.id))
         known.formUnion(Set1.runLength.defects.map(\.id))
         known.formUnion(Set1.csv.defects.map(\.id))
 

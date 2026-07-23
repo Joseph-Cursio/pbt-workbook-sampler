@@ -6,10 +6,17 @@ kernel variants (*defects*) and the grade is behavioral:
 
 > *you detected 7/9 defects — here are the two that went undetected and why.*
 
-This repo is the **free sampler**: **5 of the full lab's 58 exercises** — warm-ups
-W1–W3 plus the first two round-trips of Set 1. It's the whole loop, end to end, on
+This repo is the **free sampler**: **6 of the full lab's 58 exercises** — warm-ups
+W1–W4 plus the first two round-trips of Set 1. It's the whole loop, end to end, on
 the gentlest exercises — enough to feel whether an executable, refutable exercise
 teaches you something a worked example can't.
+
+**W4 is the one to do if you only do one.** It hands you a passing test table —
+`(2,4), (5,10), (9,18)` — and asks for the property hiding inside it. One of the
+two hidden bugs returns `|x| · 2`, so it **agrees with all three examples** and is
+wrong for every negative number. Your example tests pass. Your property doesn't.
+That gap is the entire argument for property-based testing, and you can run it in
+about two minutes.
 
 **You'll need macOS 14+ and a Swift 6 toolchain** (`swift --version`). That's the
 only requirement; there's no account, no service, and nothing phones home.
@@ -84,7 +91,7 @@ Open `Sources/WorkbookExercises/Submissions.swift`, write a property, re-run.
   and Set 1 kernels, and their defects. Everything is public. These defects are
   the *free sample* — read them all you like.
 - **Not here:** the full product's private grading corpora. The paid lab adds the
-  other **53 exercises** across **Sets 2–10** — conformance laws, generators,
+  other **52 exercises** across **Sets 2–10** — conformance laws, generators,
   metamorphic testing, shapeless bugs (banker's rounding, dropped separators),
   value semantics, model-based command sequences, idempotency — and a **"prove it
   can't be proven" capstone**. Their defects stay secret, because a public answer

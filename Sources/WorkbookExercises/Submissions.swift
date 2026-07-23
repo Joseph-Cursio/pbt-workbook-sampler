@@ -34,6 +34,21 @@ public enum Submissions {
         }
     }
 
+    // MARK: Warm-up W4 · The lift — YOU strengthen this one.
+    //
+    // You're handed a test table (see the prompt): (2,4), (5,10), (9,18).
+    // The starter below is a REAL but WEAK generalization — it holds on those
+    // examples and catches one of the two hidden bugs. Your job is to strengthen
+    // it until that defect is detected too. This is the examples→properties skill.
+
+    public static var doubleFromExamples: Property<Int, any Doubler> {
+        Property("result is even") { input, subject in
+            // A genuine pattern in the table (4, 10, 18 are all even) — but too
+            // weak. It leaves a defect undetected. What is the examples' *exact* claim?
+            subject.double(input) % 2 == 0
+        }
+    }
+
     // MARK: Set 1 · Round-trips — YOU write these.
 
     public static var runLengthRoundTrip: Property<[Int], any RunLengthCodec> {
