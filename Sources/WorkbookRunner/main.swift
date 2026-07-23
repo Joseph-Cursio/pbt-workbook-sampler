@@ -9,10 +9,16 @@ import WorkbookGraderSwift
 
 let exercises = Workbook.allExercises
 
+/// Exercise count of the full lab (Warm-up + Sets 1–10 + Capstone), which lives
+/// in the private `pbt-workbook` repo. The single source of this number in the
+/// sampler — the header and footer below both derive from it, so adding a set
+/// there means updating one constant here.
+let fullLabExerciseCount = 58
+
 print("""
-Properties, Worked — FREE SAMPLER — grading \(exercises.count) exercises.
+Properties, Worked — FREE SAMPLER — grading \(exercises.count) of the full lab's \
+\(fullLabExerciseCount) exercises.
 Edit Sources/WorkbookExercises/Submissions.swift, then re-run.
-The full lab adds Sets 2–10 and a "prove it can't be proven" capstone.
 ────────────────────────────────────────────────────────────
 """)
 
@@ -30,6 +36,17 @@ print("\(passed)/\(exercises.count) exercises passing.")
 if passed < exercises.count {
     print("Prompts live under exercises/. Strengthen a property and re-run.")
 }
+
+// The upsell lands here, at the moment the reader has just finished, rather
+// than in the header where it would be a claim about work not yet done.
+print("""
+
+This sampler is \(exercises.count) of the full lab's \(fullLabExerciseCount) exercises. \
+The other \(fullLabExerciseCount - exercises.count) span
+Sets 2–10 — conformance laws, generators you write yourself, metamorphic
+testing, shapeless bugs, value semantics, model-based command sequences,
+idempotency — and a "prove it can't be proven" capstone.
+""")
 
 func indent(_ text: String) -> String {
     text.split(separator: "\n", omittingEmptySubsequences: false)

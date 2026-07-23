@@ -6,9 +6,10 @@ kernel variants (*defects*) and the grade is behavioral:
 
 > *you detected 7/9 defects — here are the two that went undetected and why.*
 
-This repo is the **free sampler**: the Warm-up + Set 1 (round-trips). It's the
-whole loop, end to end, on the gentlest sets — enough to feel whether an
-executable, refutable exercise teaches you something a worked example can't.
+This repo is the **free sampler**: **5 of the full lab's 58 exercises** — the
+Warm-up plus the first two round-trips of Set 1. It's the whole loop, end to end,
+on the gentlest sets — enough to feel whether an executable, refutable exercise
+teaches you something a worked example can't.
 
 ## Run it
 
@@ -36,12 +37,12 @@ Open `Sources/WorkbookExercises/Submissions.swift`, write a property, re-run.
 - **Here:** the grader (a language-neutral core + a Swift binding), the Warm-up
   and Set 1 kernels, and their defects. Everything is public. These defects are
   the *free sample* — read them all you like.
-- **Not here:** the full product's private grading corpora. The paid lab adds
-  **Sets 2–10** — conformance laws, generators, metamorphic testing, shapeless
-  bugs (banker's rounding, dropped separators), value semantics, model-based
-  command sequences, idempotency — and a **"prove it can't be proven" capstone**.
-  Their defects stay secret, because a public answer key is just a solutions
-  manual next to the exam.
+- **Not here:** the full product's private grading corpora. The paid lab adds the
+  other **53 exercises** across **Sets 2–10** — conformance laws, generators,
+  metamorphic testing, shapeless bugs (banker's rounding, dropped separators),
+  value semantics, model-based command sequences, idempotency — and a **"prove it
+  can't be proven" capstone**. Their defects stay secret, because a public answer
+  key is just a solutions manual next to the exam.
 
 ## Engine-only
 
