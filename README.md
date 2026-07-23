@@ -6,10 +6,13 @@ kernel variants (*defects*) and the grade is behavioral:
 
 > *you detected 7/9 defects — here are the two that went undetected and why.*
 
-This repo is the **free sampler**: **5 of the full lab's 58 exercises** — the
-Warm-up plus the first two round-trips of Set 1. It's the whole loop, end to end,
-on the gentlest sets — enough to feel whether an executable, refutable exercise
+This repo is the **free sampler**: **5 of the full lab's 58 exercises** — warm-ups
+W1–W3 plus the first two round-trips of Set 1. It's the whole loop, end to end, on
+the gentlest exercises — enough to feel whether an executable, refutable exercise
 teaches you something a worked example can't.
+
+**You'll need macOS 14+ and a Swift 6 toolchain** (`swift --version`). That's the
+only requirement; there's no account, no service, and nothing phones home.
 
 ## What a grade looks like
 
@@ -39,6 +42,20 @@ right past it, because counting elements never looks at where they are.
 That's the point of the lab. Not "your test failed" but **"here is the bug you
 would have shipped, and why your law couldn't see it."** You strengthen the
 property until nothing gets past it.
+
+> **Reproduce that grade in about a minute.** It isn't a mock-up. Clone the repo,
+> open `Sources/WorkbookExercises/Submissions.swift`, and replace the body of
+> `runLengthRoundTrip` with the weak law:
+>
+> ```swift
+> Property("decompress(compress(x)).count == x.count") { input, codec in
+>     codec.decompress(codec.compress(input)).count == input.count
+> }
+> ```
+>
+> Then `make grade`. You'll get the block above, `[0]` and all. Every claim in
+> this README is something you can check by running it — which is the same
+> standard the lab holds your properties to.
 
 ## Run it
 
