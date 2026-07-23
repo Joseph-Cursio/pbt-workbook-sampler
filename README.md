@@ -18,7 +18,13 @@ make test       # the answer key: every corpus here is fully detectable
 ```
 
 Open `Sources/WorkbookExercises/Submissions.swift`, write a property, re-run.
-Start at `exercises/README.md`.
+
+- **New to property-based testing?** Start at
+  [`exercises/on-ramp.md`](exercises/on-ramp.md) — one page, the four words you
+  need. No prior knowledge assumed.
+- **Already know PBT?** Go straight to
+  [`exercises/README.md`](exercises/README.md) for the loop and how to read a
+  grade.
 
 > `make grade` wraps the run so the executable finds Swift Testing — the engine
 > links it, so anything linking the engine needs it at launch. Toolchains ship it
