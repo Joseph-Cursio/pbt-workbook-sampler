@@ -22,9 +22,9 @@ Say you're on S1.1 — a run-length codec — and you reach for the obvious law:
       ✗ true but weak — detected 2 of 3; 1 defect undetected (over 200 inputs).
       detected:
           rle.drops-singletons — compressor drops runs of length 1
-            first caught on: [2, 3, 3, 1, 2, 0]
+            first caught on: [0]
           rle.off-by-one — decompressor emits count-1 copies per run
-            first caught on: [2, 3, 3, 1, 2, 0]
+            first caught on: [0]
       undetected (defects your property would still ship):
           rle.merges-non-adjacent — groups equal values globally, losing interleaving order
         Strengthen the law until none go undetected — that's the ratchet from a
@@ -32,9 +32,9 @@ Say you're on S1.1 — a run-length codec — and you reach for the obvious law:
 ```
 
 Your law is *true*. It also catches two real bugs — and the grader hands you the
-smallest input that exposes each, ready to paste into a scratch test. But a codec
-that quietly reorders your data sails right past it, because counting elements
-never looks at where they are.
+smallest input that exposes each, shrunk down to the essence: a single-element
+list, `[0]`, is all it takes. But a codec that quietly reorders your data sails
+right past it, because counting elements never looks at where they are.
 
 That's the point of the lab. Not "your test failed" but **"here is the bug you
 would have shipped, and why your law couldn't see it."** You strengthen the
