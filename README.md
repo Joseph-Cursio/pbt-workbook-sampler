@@ -11,6 +11,35 @@ Warm-up plus the first two round-trips of Set 1. It's the whole loop, end to end
 on the gentlest sets — enough to feel whether an executable, refutable exercise
 teaches you something a worked example can't.
 
+## What a grade looks like
+
+Say you're on S1.1 — a run-length codec — and you reach for the obvious law:
+*compressing and decompressing gets my elements back, so the count should match.*
+
+```
+[S1.1] Run-length round-trip  (book Ch8, Ch17)  — WEAK — 2/3 detected
+    Set 1 · S1.1 run-length round-trip — property “decompress(compress(x)).count == x.count”
+      ✗ true but weak — detected 2 of 3; 1 defect undetected (over 200 inputs).
+      detected:
+          rle.drops-singletons — compressor drops runs of length 1
+            first caught on: [2, 3, 3, 1, 2, 0]
+          rle.off-by-one — decompressor emits count-1 copies per run
+            first caught on: [2, 3, 3, 1, 2, 0]
+      undetected (defects your property would still ship):
+          rle.merges-non-adjacent — groups equal values globally, losing interleaving order
+        Strengthen the law until none go undetected — that's the ratchet from a
+        property that's merely true to one that characterizes.
+```
+
+Your law is *true*. It also catches two real bugs — and the grader hands you the
+smallest input that exposes each, ready to paste into a scratch test. But a codec
+that quietly reorders your data sails right past it, because counting elements
+never looks at where they are.
+
+That's the point of the lab. Not "your test failed" but **"here is the bug you
+would have shipped, and why your law couldn't see it."** You strengthen the
+property until nothing gets past it.
+
 ## Run it
 
 ```
