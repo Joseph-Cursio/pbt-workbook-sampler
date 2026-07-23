@@ -50,6 +50,12 @@ A submission imports only the engine (`swift-property-based`) plus the exercise'
 kernel protocol — no extra kit. Pinned to `1.2.x`. The sampler doubles as proof
 the exercise spine needs nothing more.
 
+## License
+
+MIT — see [`LICENSE`](LICENSE). Clone it, edit it, keep your answers, reuse the
+kernels in your own tests. The license covers this sampler; the paid lab's
+private corpora are not distributed here.
+
 ---
 
 *The full workbook and the book behind it: property-based testing in Swift, from
