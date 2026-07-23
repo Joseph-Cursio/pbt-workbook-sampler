@@ -3,7 +3,7 @@
 //  The mechanics, not the thinking. The reader is *handed* a correct property
 //  and a broken function; the job is to run it and read the shrunk
 //  counterexample. Each corpus here has a correct reference and exactly ONE
-//  obvious defect, so the grade shows a single detect with its reproduction.
+//  obvious defect, so the grade shows a single detection with its reproduction.
 
 import WorkbookGraderCore
 

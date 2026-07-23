@@ -20,9 +20,10 @@ make test       # the answer key: every corpus here is fully detectable
 Open `Sources/WorkbookExercises/Submissions.swift`, write a property, re-run.
 Start at `exercises/README.md`.
 
-> `make grade` wraps the run so the executable finds `libTesting.dylib` — the
-> engine links Swift Testing, so anything linking it needs that library at
-> launch. `swift test` needs no wrapper.
+> `make grade` wraps the run so the executable finds Swift Testing — the engine
+> links it, so anything linking the engine needs it at launch. Toolchains ship it
+> two ways (a framework or a dylib) and the wrapper covers both, so use `make
+> grade` rather than running the binary directly. `swift test` needs no wrapper.
 
 ## What's here — and what isn't
 
