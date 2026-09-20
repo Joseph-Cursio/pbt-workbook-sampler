@@ -26,9 +26,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Joseph-Cursio/pbt-workbook-grader.git",
-                 .upToNextMinor(from: "0.3.0")),
+                 .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/x-sheep/swift-property-based.git",
-                 .upToNextMinor(from: "1.2.0")),
+                 from: "2.0.0"),
     ],
     targets: [
         .target(
