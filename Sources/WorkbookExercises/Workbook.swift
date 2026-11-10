@@ -4,18 +4,20 @@
 //  no secret defects — those live in the full, paid product.
 
 import PropertyBased
-import WorkbookGraderSwift
 import WorkbookCorpus
+import WorkbookGraderSwift
 
 enum ProvidedGenerators {
     static let smallList = Gen.int(in: -20...20).array(of: 0...6)
     static let anyInt = Gen.int(in: -1_000...1_000)
-    static let clampTriple = zip(Gen.int(in: -50...50),
-                                 Gen.int(in: -50...50),
-                                 Gen.int(in: -50...50))
-        .map { value, boundA, boundB in
-            (value, min(boundA, boundB), max(boundA, boundB))
-        }
+    static let clampInput = zip(
+        Gen.int(in: -50...50),
+        Gen.int(in: -50...50),
+        Gen.int(in: -50...50)
+    )
+    .map { value, boundA, boundB in
+        ClampInput(value: value, low: min(boundA, boundB), high: max(boundA, boundB))
+    }
     static let signedInt = Gen.int(in: -50...50)
     static let repeatyList = Gen.int(in: 0...3).array(of: 0...8)
     static let signedList = Gen.int(in: -50...50).array(of: 0...6)
@@ -33,19 +35,21 @@ enum ProvidedShrinkers {
         Shrinkers.integer(value)
     }
 
-    /// The clamp triple carries an invariant the generator establishes —
+    /// The clamp input carries an invariant the generator establishes —
     /// `low <= high`. Shrinking must preserve it, or the reader is handed a
     /// "counterexample" that could never have been generated and that the
     /// property was never meant to hold for.
-    static func clampTriple(_ triple: (Int, Int, Int)) -> [(Int, Int, Int)] {
-        let (value, low, high) = triple
-        var candidates: [(Int, Int, Int)] = []
-        for smaller in Shrinkers.integer(value) { candidates.append((smaller, low, high)) }
+    static func clampInput(_ input: ClampInput) -> [ClampInput] {
+        let (value, low, high) = (input.value, input.low, input.high)
+        var candidates: [ClampInput] = []
+        for smaller in Shrinkers.integer(value) {
+            candidates.append(ClampInput(value: smaller, low: low, high: high))
+        }
         for smaller in Shrinkers.integer(low) where smaller <= high {
-            candidates.append((value, smaller, high))
+            candidates.append(ClampInput(value: value, low: smaller, high: high))
         }
         for smaller in Shrinkers.integer(high) where low <= smaller {
-            candidates.append((value, low, smaller))
+            candidates.append(ClampInput(value: value, low: low, high: smaller))
         }
         return candidates
     }
@@ -54,10 +58,15 @@ enum ProvidedShrinkers {
 /// One exercise, type-erased to a `() -> Grade` so a heterogeneous list of them
 /// can be graded uniformly by the runner.
 public struct GradedExercise {
+    /// The exercise's id, e.g. `"S1.1"`.
     public let id: String
+    /// The exercise's title, as the runner prints it.
     public let title: String
+    /// The book chapters the exercise draws on, e.g. `"Ch8, Ch17"`.
     public let chapterRef: String
+    /// The prompt's path, relative to the repository root.
     public let promptPath: String
+    /// `false` for the warm-ups (the property is handed to you).
     public let readerAuthored: Bool
     private let runner: (Int) -> Grade
 
@@ -86,9 +95,11 @@ public struct GradedExercise {
         }
     }
 
+    /// Grades the exercise's property against its corpus over `count` inputs.
     public func grade(count: Int = 200) -> Grade { runner(count) }
 }
 
+/// The exercise registry: every graded exercise, in teaching order.
 public enum Workbook {
     /// The free sampler slice, in teaching order.
     public static var allExercises: [GradedExercise] {
@@ -99,28 +110,32 @@ public enum Workbook {
                 readerAuthored: false,
                 corpus: Warmup.reverse, generator: ProvidedGenerators.smallList,
                 property: Submissions.reverseRoundTrip,
-                shrink: ProvidedShrinkers.intList),
+                shrink: ProvidedShrinkers.intList
+            ),
             GradedExercise(
                 id: "W2", title: "Absolute value",
                 chapterRef: "Ch5", promptPath: "exercises/warmup/w2-absolute.md",
                 readerAuthored: false,
                 corpus: Warmup.absolute, generator: ProvidedGenerators.anyInt,
                 property: Submissions.absoluteValue,
-                shrink: ProvidedShrinkers.int),
+                shrink: ProvidedShrinkers.int
+            ),
             GradedExercise(
                 id: "W3", title: "Clamp",
                 chapterRef: "Ch5", promptPath: "exercises/warmup/w3-clamp.md",
                 readerAuthored: false,
-                corpus: Warmup.clamp, generator: ProvidedGenerators.clampTriple,
+                corpus: Warmup.clamp, generator: ProvidedGenerators.clampInput,
                 property: Submissions.clampInRange,
-                shrink: ProvidedShrinkers.clampTriple),
+                shrink: ProvidedShrinkers.clampInput
+            ),
             GradedExercise(
                 id: "W4", title: "The lift — generalize a test",
                 chapterRef: "Ch2, Ch18", promptPath: "exercises/warmup/w4-the-lift.md",
                 readerAuthored: true,
                 corpus: Lift.double, generator: ProvidedGenerators.signedInt,
                 property: Submissions.doubleFromExamples,
-                shrink: ProvidedShrinkers.int),
+                shrink: ProvidedShrinkers.int
+            ),
 
             GradedExercise(
                 id: "S1.1", title: "Run-length round-trip",
@@ -128,14 +143,16 @@ public enum Workbook {
                 readerAuthored: true,
                 corpus: Set1.runLength, generator: ProvidedGenerators.repeatyList,
                 property: Submissions.runLengthRoundTrip,
-                shrink: ProvidedShrinkers.intList),
+                shrink: ProvidedShrinkers.intList
+            ),
             GradedExercise(
                 id: "S1.2", title: "CSV round-trip",
                 chapterRef: "Ch8, Ch17", promptPath: "exercises/set1-round-trips/s1-2-csv.md",
                 readerAuthored: true,
                 corpus: Set1.csv, generator: ProvidedGenerators.signedList,
                 property: Submissions.csvRoundTrip,
-                shrink: ProvidedShrinkers.intList)
+                shrink: ProvidedShrinkers.intList
+            ),
         ]
     }
 }

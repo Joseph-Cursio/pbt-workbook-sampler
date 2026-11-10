@@ -4,11 +4,11 @@
 //  and Set 1 corpora are fully detectable by a correct property, and the Set 1
 //  starters leave the full undetected list.
 
-import Testing
 import PropertyBased
-import WorkbookGraderSwift
+import Testing
 @testable import WorkbookCorpus
 import WorkbookExercises
+import WorkbookGraderSwift
 
 @Suite("Sampler end-to-end grading")
 struct EndToEndTests {
@@ -18,9 +18,11 @@ struct EndToEndTests {
         let property = Property<[Int], any RunLengthCodec>("round-trip") { input, codec in
             codec.decompress(codec.compress(input)) == input
         }
-        let grade = Set1.runLength.grade(with: property,
-                                         using: Gen.int(in: 0...3).array(of: 0...8),
-                                         count: 300)
+        let grade = Set1.runLength.grade(
+            with: property,
+            using: Gen.int(in: 0...3).array(of: 0...8),
+            count: 300
+        )
         #expect(grade.passed, Comment(rawValue: grade.render()))
     }
 
@@ -29,16 +31,20 @@ struct EndToEndTests {
         let property = Property<[Int], any IntListCSVCodec>("round-trip") { input, codec in
             codec.decode(codec.encode(input)) == input
         }
-        let grade = Set1.csv.grade(with: property,
-                                   using: Gen.int(in: -50...50).array(of: 0...6),
-                                   count: 300)
+        let grade = Set1.csv.grade(
+            with: property,
+            using: Gen.int(in: -50...50).array(of: 0...6),
+            count: 300
+        )
         #expect(grade.passed, Comment(rawValue: grade.render()))
     }
 
     @Test("Warm-up starters are correct and each detects its one defect")
     func warmupStartersDetect() {
-        let reverse = Warmup.reverse.grade(with: Submissions.reverseRoundTrip,
-                                           using: Gen.int(in: -20...20).array(of: 0...6))
+        let reverse = Warmup.reverse.grade(
+            with: Submissions.reverseRoundTrip,
+            using: Gen.int(in: -20...20).array(of: 0...6)
+        )
         #expect(reverse.passed)
         #expect(reverse.detected.count == 1)
         #expect(reverse.detected.first?.counterexample != nil)

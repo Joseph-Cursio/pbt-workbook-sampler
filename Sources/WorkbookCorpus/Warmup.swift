@@ -11,6 +11,7 @@ import WorkbookGraderCore
 
 /// Reversing a list twice must return the original list.
 public protocol ListReverser {
+    /// `list` in reverse order.
     func reverse(_ list: [Int]) -> [Int]
 }
 
@@ -29,6 +30,7 @@ struct DroppingReverser: ListReverser {
 
 /// `abs` is non-negative and equals either `x` or `-x`.
 public protocol Absoluter {
+    /// The absolute value of `value`.
     func absolute(_ value: Int) -> Int
 }
 
@@ -45,6 +47,7 @@ struct IdentityAbsoluter: Absoluter {
 
 /// `clamp(v, lo, hi)` lands inside `lo...hi`.
 public protocol Clamper {
+    /// `value` limited to the range `low...high`.
     func clamp(_ value: Int, low: Int, high: Int) -> Int
 }
 
@@ -56,46 +59,56 @@ struct CorrectClamper: Clamper {
 
 /// The bug: enforces the lower bound but forgets the upper one.
 struct HalfClamper: Clamper {
-    func clamp(_ value: Int, low: Int, high: Int) -> Int {
+    func clamp(_ value: Int, low: Int, high _: Int) -> Int {
         max(value, low)
     }
 }
 
 // MARK: - Corpora
 
+/// The Warm-up (W1–W3): one corpus per exercise.
 public enum Warmup {
+    /// W1 reverse round-trip: `CorrectReverser` and its one defect.
     public static var reverse: Corpus<any ListReverser> {
         Corpus(
             name: "Warm-up W1 · reverse round-trip",
             reference: CorrectReverser(),
             defects: [
-                Defect(id: "reverse.drops-last",
-                       explanation: "reverses but drops the last element",
-                       subject: DroppingReverser())
+                Defect(
+                    id: "reverse.drops-last",
+                    explanation: "reverses but drops the last element",
+                    subject: DroppingReverser()
+                ),
             ]
         )
     }
 
+    /// W2 absolute value: `CorrectAbsoluter` and its one defect.
     public static var absolute: Corpus<any Absoluter> {
         Corpus(
             name: "Warm-up W2 · absolute value",
             reference: CorrectAbsoluter(),
             defects: [
-                Defect(id: "abs.identity",
-                       explanation: "returns the input unchanged; negatives stay negative",
-                       subject: IdentityAbsoluter())
+                Defect(
+                    id: "abs.identity",
+                    explanation: "returns the input unchanged; negatives stay negative",
+                    subject: IdentityAbsoluter()
+                ),
             ]
         )
     }
 
+    /// W3 clamp: `CorrectClamper` and its one defect.
     public static var clamp: Corpus<any Clamper> {
         Corpus(
             name: "Warm-up W3 · clamp",
             reference: CorrectClamper(),
             defects: [
-                Defect(id: "clamp.no-upper-bound",
-                       explanation: "applies the lower bound but never the upper bound",
-                       subject: HalfClamper())
+                Defect(
+                    id: "clamp.no-upper-bound",
+                    explanation: "applies the lower bound but never the upper bound",
+                    subject: HalfClamper()
+                ),
             ]
         )
     }

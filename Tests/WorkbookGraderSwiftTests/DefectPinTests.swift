@@ -25,8 +25,8 @@
 //  "update the expected value" to make a test pass.
 
 import Testing
-import WorkbookGraderCore
 @testable import WorkbookCorpus
+import WorkbookGraderCore
 
 /// Pins one defect to its exact strength.
 private func pin<Input, Subject>(
@@ -79,6 +79,13 @@ private func pinAlwaysCaught<Input, Subject>(
     }
 }
 
+/// The arguments of one `clamp` call.
+struct ClampArguments {
+    let value: Int
+    let low: Int
+    let high: Int
+}
+
 @Suite("The defect corpus is pinned")
 struct DefectPinTests {
 
@@ -86,122 +93,144 @@ struct DefectPinTests {
 
     @Test("W1 · reverse.drops-last")
     func reverseDropsLast() {
-        pin(Warmup.reverse, "reverse.drops-last",
-            law: { (xs: [Int], r: any ListReverser) in r.reverse(r.reverse(xs)) == xs },
+        pin(
+            Warmup.reverse, "reverse.drops-last",
+            law: { (values: [Int], subject: any ListReverser) in subject.reverse(subject.reverse(values)) == values },
             // Caught: any non-empty list loses its last element.
             catching: [0],
             // Spared: the empty list has no last element to drop.
-            sparing: [])
+            sparing: []
+        )
     }
 
     @Test("W2 · abs.identity")
     func absIdentity() {
-        pin(Warmup.absolute, "abs.identity",
-            law: { (x: Int, a: any Absoluter) in a.absolute(x) >= 0 && (a.absolute(x) == x || a.absolute(x) == -x) },
+        pin(
+            Warmup.absolute, "abs.identity",
+            law: { (x: Int, subject: any Absoluter) in
+                subject.absolute(x) >= 0 && (subject.absolute(x) == x || subject.absolute(x) == -x)
+            },
             // Caught: a negative stays negative.
             catching: -1,
             // Spared: a non-negative is already its own absolute value.
-            sparing: 1)
+            sparing: 1
+        )
     }
 
     @Test("W3 · clamp.no-upper-bound")
     func clampNoUpperBound() {
-        pin(Warmup.clamp, "clamp.no-upper-bound",
-            law: { (args: (Int, Int, Int), c: any Clamper) in
-                let r = c.clamp(args.0, low: args.1, high: args.2)
-                return args.1 <= r && r <= args.2
+        pin(
+            Warmup.clamp, "clamp.no-upper-bound",
+            law: { (args: ClampArguments, subject: any Clamper) in
+                let clamped = subject.clamp(args.value, low: args.low, high: args.high)
+                return args.low <= clamped && clamped <= args.high
             },
             // Caught: a value above `high` is never brought down.
-            catching: (1, 0, 0),
+            catching: ClampArguments(value: 1, low: 0, high: 0),
             // Spared: a value already in range needs no upper bound applied.
-            sparing: (0, 0, 1))
+            sparing: ClampArguments(value: 0, low: 0, high: 1)
+        )
     }
 
     // MARK: Warm-up W4 · the lift
 
-    private static let doubling: @Sendable (Int, any Doubler) -> Bool = { x, d in
-        d.double(x) == x * 2
+    private static let doubling: @Sendable (Int, any Doubler) -> Bool = { x, subject in
+        subject.double(x) == x * 2
     }
 
     @Test("W4 · double.plus-one")
     func doublePlusOne() {
         // 2x+1 is never 2x, so no input survives it. This is the *easy* half of
         // the lift — the reader's weak "result is even" law already catches it.
-        pinAlwaysCaught(Lift.double, "double.plus-one", law: Self.doubling,
-                        catching: [0, 1, -1, 9])
+        pinAlwaysCaught(
+            Lift.double, "double.plus-one", law: Self.doubling,
+            catching: [0, 1, -1, 9]
+        )
     }
 
     @Test("W4 · double.abs")
     func doubleAbs() {
-        pin(Lift.double, "double.abs", law: Self.doubling,
+        pin(
+            Lift.double, "double.abs", law: Self.doubling,
             // Caught: a negative. This is the entire point of the exercise.
             catching: -1,
             // Spared: 2 — and 2 is literally the first row of the example table
             // the reader is handed, along with 5 and 9. The pin states in
             // executable form what this rep exists to teach: the bug survives
             // your examples and dies to your property.
-            sparing: 2)
+            sparing: 2
+        )
     }
 
     // MARK: Set 1 · S1.1 run-length
 
-    private static let rleLaw: @Sendable ([Int], any RunLengthCodec) -> Bool = { xs, c in
-        c.decompress(c.compress(xs)) == xs
+    private static let rleLaw: @Sendable ([Int], any RunLengthCodec) -> Bool = { values, subject in
+        subject.decompress(subject.compress(values)) == values
     }
 
     @Test("S1.1 · rle.drops-singletons")
     func rleDropsSingletons() {
-        pin(Set1.runLength, "rle.drops-singletons", law: Self.rleLaw,
+        pin(
+            Set1.runLength, "rle.drops-singletons", law: Self.rleLaw,
             // Caught: a run of length 1 is discarded.
             catching: [0],
             // Spared: no singleton runs, nothing to drop.
-            sparing: [0, 0])
+            sparing: [0, 0]
+        )
     }
 
     @Test("S1.1 · rle.off-by-one")
     func rleOffByOne() {
-        pin(Set1.runLength, "rle.off-by-one", law: Self.rleLaw,
+        pin(
+            Set1.runLength, "rle.off-by-one", law: Self.rleLaw,
             // Caught: one copy short on every run.
             catching: [0],
             // Spared: no runs at all, so nothing is emitted short.
-            sparing: [])
+            sparing: []
+        )
     }
 
     @Test("S1.1 · rle.merges-non-adjacent")
     func rleMergesNonAdjacent() {
-        pin(Set1.runLength, "rle.merges-non-adjacent", law: Self.rleLaw,
+        pin(
+            Set1.runLength, "rle.merges-non-adjacent", law: Self.rleLaw,
             // Caught: a value appears, stops, and comes back. This is the bug —
             // interleaving, not ordering.
             catching: [2, 0, 2],
             // Spared: merely out of order, nothing interleaved. A defect that
             // fails here is the weaker *reordering* bug wearing this one's name,
             // which is exactly how both ports forked.
-            sparing: [1, 0])
+            sparing: [1, 0]
+        )
     }
 
     // MARK: Set 1 · S1.2 CSV
 
-    private static let csvLaw: @Sendable ([Int], any IntListCSVCodec) -> Bool = { xs, c in
-        c.decode(c.encode(xs)) == xs
+    private static let csvLaw: @Sendable ([Int], any IntListCSVCodec) -> Bool = { values, subject in
+        subject.decode(subject.encode(values)) == values
     }
 
     @Test("S1.2 · csv.empty-becomes-zero")
     func csvEmptyBecomesZero() {
-        pin(Set1.csv, "csv.empty-becomes-zero", law: Self.csvLaw,
+        pin(
+            Set1.csv, "csv.empty-becomes-zero", law: Self.csvLaw,
             // Caught: the empty-input edge case, and only that.
             catching: [],
             // Spared: any non-empty list decodes normally.
-            sparing: [1])
+            sparing: [1]
+        )
     }
 
     @Test("S1.2 · csv.dash-separator")
     func csvDashSeparator() {
-        pin(Set1.csv, "csv.dash-separator", law: Self.csvLaw,
+        pin(
+            Set1.csv, "csv.dash-separator", law: Self.csvLaw,
             // Caught: a minus sign collides with the separator.
             catching: [-1],
             // Spared: non-negative values round-trip through '-' just fine,
             // which is what makes this defect invisible to a careless generator.
-            sparing: [1, 2])
+            sparing: [1, 2]
+        )
     }
 
     // MARK: Completeness

@@ -49,6 +49,7 @@ let package = Package(
         .target(
             name: "WorkbookExercises",
             dependencies: [
+                .product(name: "WorkbookGraderCore", package: "pbt-workbook-grader"),
                 .product(name: "WorkbookGraderSwift", package: "pbt-workbook-grader"),
                 "WorkbookCorpus",
                 .product(name: "PropertyBased", package: "swift-property-based"),
@@ -58,6 +59,7 @@ let package = Package(
             name: "WorkbookRunner",
             dependencies: [
                 "WorkbookExercises",
+                .product(name: "WorkbookGraderCore", package: "pbt-workbook-grader"),
                 .product(name: "WorkbookGraderSwift", package: "pbt-workbook-grader"),
             ]
         ),
