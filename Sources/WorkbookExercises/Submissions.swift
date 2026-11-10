@@ -58,7 +58,7 @@ public enum Submissions {
     /// S1.1 · Run-length round-trip: your property.
     public static var runLengthRoundTrip: Property<[Int], any RunLengthCodec> {
         Property("decompress(compress(x)) == x") { input, codec in
-            // TODO: the round-trip law is `decompress(compress(x)) == x`.
+            // Exercise: the round-trip law is `decompress(compress(x)) == x`.
             _ = (input, codec)
             return true
         }
@@ -67,7 +67,7 @@ public enum Submissions {
     /// S1.2 · CSV round-trip: your property.
     public static var csvRoundTrip: Property<[Int], any IntListCSVCodec> {
         Property("decode(encode(x)) == x") { input, codec in
-            // TODO: the round-trip law is `decode(encode(x)) == x`.
+            // Exercise: the round-trip law is `decode(encode(x)) == x`.
             _ = (input, codec)
             return true
         }
