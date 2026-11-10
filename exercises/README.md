@@ -8,7 +8,9 @@ buggy ones. Then a machine grades it by trying to break it.
 ## The loop
 
 1. Open `Sources/WorkbookExercises/Submissions.swift`.
-2. Find the property for this exercise. Replace the placeholder with your law.
+2. Find the property for this exercise (its prompt names it; most placeholders
+   open with an `// Exercise:` comment holding a hint). Replace the placeholder
+   with your law.
    *Blank on what law to write? See [finding-a-property.md](finding-a-property.md)
    — the pre/post/invariant checklist for getting from a bare function to a
    candidate property.*

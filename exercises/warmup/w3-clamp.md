@@ -11,8 +11,8 @@ protocol Clamper { func clamp(_ value: Int, low: Int, high: Int) -> Int }
 The property is given to you as:
 
 ```swift
-let result = clamper.clamp(value, low: low, high: high)
-low <= result && result <= high
+let result = clamper.clamp(input.value, low: input.low, high: input.high)
+input.low <= result && result <= input.high
 ```
 
 `clamp` must land inside `low...high`. The provided generator only ever gives you

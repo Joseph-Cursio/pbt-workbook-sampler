@@ -1,4 +1,4 @@
-//  Set1RoundTrips.swift — Round-trips and inverses (Book Ch8, Ch17).
+//  Set1.swift — Round-trips and inverses (Book Ch8, Ch17).
 //
 //  The template that gives the most bugs per line of thought:
 //  `decode(encode(x)) == x`. Now the reader writes the law; the generator is
@@ -13,7 +13,9 @@ import WorkbookGraderCore
 /// Compress a list into runs, and expand runs back into a list.
 /// The round-trip law: `decompress(compress(x)) == x`.
 public protocol RunLengthCodec {
+    /// The run-length encoding of `input`.
     func compress(_ input: [Int]) -> [Run]
+    /// The list the runs expand back to.
     func decompress(_ runs: [Run]) -> [Int]
 }
 
@@ -22,6 +24,7 @@ public protocol RunLengthCodec {
 public struct Run: Equatable {
     public let value: Int
     public let count: Int
+
     public init(value: Int, count: Int) {
         self.value = value
         self.count = count
@@ -48,6 +51,7 @@ struct CorrectRunLength: RunLengthCodec {
 /// The bug: the compressor drops runs of length 1, so singletons vanish.
 struct DropsSingletonsRunLength: RunLengthCodec {
     private let correct = CorrectRunLength()
+
     func compress(_ input: [Int]) -> [Run] {
         correct.compress(input).filter { $0.count > 1 }
     }
@@ -57,6 +61,7 @@ struct DropsSingletonsRunLength: RunLengthCodec {
 /// The bug: the decompressor emits one copy too few for each run.
 struct OffByOneRunLength: RunLengthCodec {
     private let correct = CorrectRunLength()
+
     func compress(_ input: [Int]) -> [Run] { correct.compress(input) }
     func decompress(_ runs: [Run]) -> [Int] {
         runs.flatMap { run in Array(repeating: run.value, count: max(0, run.count - 1)) }
@@ -75,7 +80,7 @@ struct MergesNonAdjacentRunLength: RunLengthCodec {
             if counts[value] == nil { order.append(value) }
             counts[value, default: 0] += 1
         }
-        return order.map { Run(value: $0, count: counts[$0]!) }
+        return order.map { Run(value: $0, count: counts[$0, default: 0]) }
     }
     func decompress(_ runs: [Run]) -> [Int] {
         runs.flatMap { run in Array(repeating: run.value, count: run.count) }
@@ -87,7 +92,9 @@ struct MergesNonAdjacentRunLength: RunLengthCodec {
 /// Encode a list of ints to a comma-joined string and back.
 /// The round-trip law: `decode(encode(x)) == x`.
 public protocol IntListCSVCodec {
+    /// `input` as comma-separated integers.
     func encode(_ input: [Int]) -> String
+    /// The integers parsed back out of comma-separated `text`.
     func decode(_ text: String) -> [Int]
 }
 
@@ -124,36 +131,49 @@ struct DashSeparatorCSV: IntListCSVCodec {
 
 // MARK: - Corpora
 
+/// Set 1 · Round-trips and inverses: one corpus per exercise.
 public enum Set1 {
+    /// S1.1 run-length round-trip: `CorrectRunLength` and its three defects.
     public static var runLength: Corpus<any RunLengthCodec> {
         Corpus(
             name: "Set 1 · S1.1 run-length round-trip",
             reference: CorrectRunLength(),
             defects: [
-                Defect(id: "rle.drops-singletons",
-                       explanation: "compressor drops runs of length 1",
-                       subject: DropsSingletonsRunLength()),
-                Defect(id: "rle.off-by-one",
-                       explanation: "decompressor emits count-1 copies per run",
-                       subject: OffByOneRunLength()),
-                Defect(id: "rle.merges-non-adjacent",
-                       explanation: "groups equal values globally, losing interleaving order",
-                       subject: MergesNonAdjacentRunLength())
+                Defect(
+                    id: "rle.drops-singletons",
+                    explanation: "compressor drops runs of length 1",
+                    subject: DropsSingletonsRunLength()
+                ),
+                Defect(
+                    id: "rle.off-by-one",
+                    explanation: "decompressor emits count-1 copies per run",
+                    subject: OffByOneRunLength()
+                ),
+                Defect(
+                    id: "rle.merges-non-adjacent",
+                    explanation: "groups equal values globally, losing interleaving order",
+                    subject: MergesNonAdjacentRunLength()
+                ),
             ]
         )
     }
 
+    /// S1.2 CSV round-trip: `CorrectCSV` and its two defects.
     public static var csv: Corpus<any IntListCSVCodec> {
         Corpus(
             name: "Set 1 · S1.2 CSV round-trip",
             reference: CorrectCSV(),
             defects: [
-                Defect(id: "csv.empty-becomes-zero",
-                       explanation: "empty list decodes back to [0]",
-                       subject: EmptyBugCSV()),
-                Defect(id: "csv.dash-separator",
-                       explanation: "uses '-' as separator, colliding with minus signs",
-                       subject: DashSeparatorCSV())
+                Defect(
+                    id: "csv.empty-becomes-zero",
+                    explanation: "empty list decodes back to [0]",
+                    subject: EmptyBugCSV()
+                ),
+                Defect(
+                    id: "csv.dash-separator",
+                    explanation: "uses '-' as separator, colliding with minus signs",
+                    subject: DashSeparatorCSV()
+                ),
             ]
         )
     }

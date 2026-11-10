@@ -6,19 +6,22 @@
 //  across eleven more sets — round-trips, algebraic laws, metamorphic tests,
 //  model-based sequences, and a "prove it can't be proven" capstone.
 
-import WorkbookGraderSwift
 import WorkbookCorpus
+import WorkbookGraderCore
 
+/// Your answers: one property per exercise.
 public enum Submissions {
 
     // MARK: Warm-up — handed to you, correct. Run and read the counterexample.
 
+    /// W1 · Reverse round-trip: the property, handed to you correct.
     public static var reverseRoundTrip: Property<[Int], any ListReverser> {
         Property("reverse(reverse(x)) == x") { input, reverser in
             reverser.reverse(reverser.reverse(input)) == input
         }
     }
 
+    /// W2 · Absolute value: the property, handed to you correct.
     public static var absoluteValue: Property<Int, any Absoluter> {
         Property("abs(x) >= 0 and equals x or -x") { input, absoluter in
             let result = absoluter.absolute(input)
@@ -26,11 +29,11 @@ public enum Submissions {
         }
     }
 
-    public static var clampInRange: Property<(Int, Int, Int), any Clamper> {
+    /// W3 · Clamp: the property, handed to you correct.
+    public static var clampInRange: Property<ClampInput, any Clamper> {
         Property("low <= clamp(v, low, high) <= high") { input, clamper in
-            let (value, low, high) = input
-            let result = clamper.clamp(value, low: low, high: high)
-            return low <= result && result <= high
+            let result = clamper.clamp(input.value, low: input.low, high: input.high)
+            return input.low <= result && result <= input.high
         }
     }
 
@@ -41,27 +44,30 @@ public enum Submissions {
     // examples and catches one of the two hidden bugs. Your job is to strengthen
     // it until that defect is detected too. This is the examples→properties skill.
 
+    /// W4 · The lift — generalize a test: your property.
     public static var doubleFromExamples: Property<Int, any Doubler> {
         Property("result is even") { input, subject in
             // A genuine pattern in the table (4, 10, 18 are all even) — but too
             // weak. It leaves a defect undetected. What is the examples' *exact* claim?
-            subject.double(input) % 2 == 0
+            subject.double(input).isMultiple(of: 2)
         }
     }
 
     // MARK: Set 1 · Round-trips — YOU write these.
 
+    /// S1.1 · Run-length round-trip: your property.
     public static var runLengthRoundTrip: Property<[Int], any RunLengthCodec> {
         Property("decompress(compress(x)) == x") { input, codec in
-            // TODO: the round-trip law is `decompress(compress(x)) == x`.
+            // Exercise: the round-trip law is `decompress(compress(x)) == x`.
             _ = (input, codec)
             return true
         }
     }
 
+    /// S1.2 · CSV round-trip: your property.
     public static var csvRoundTrip: Property<[Int], any IntListCSVCodec> {
         Property("decode(encode(x)) == x") { input, codec in
-            // TODO: the round-trip law is `decode(encode(x)) == x`.
+            // Exercise: the round-trip law is `decode(encode(x)) == x`.
             _ = (input, codec)
             return true
         }

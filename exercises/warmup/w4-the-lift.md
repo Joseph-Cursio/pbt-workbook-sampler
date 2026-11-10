@@ -23,7 +23,7 @@ deliberately weak guess to strengthen:
 
 ```swift
 Property("result is even") { input, subject in
-    subject.double(input) % 2 == 0
+    subject.double(input).isMultiple(of: 2)
 }
 ```
 

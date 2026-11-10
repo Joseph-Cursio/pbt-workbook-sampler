@@ -5,7 +5,7 @@
 //  and undetected list. This is the FREE sampler — Warm-up + Set 1.
 
 import WorkbookExercises
-import WorkbookGraderSwift
+import WorkbookGraderCore
 
 let exercises = Workbook.allExercises
 
@@ -23,6 +23,7 @@ Edit Sources/WorkbookExercises/Submissions.swift, then re-run.
 """)
 
 var passed = 0
+
 for exercise in exercises {
     let grade = exercise.grade()
     let mark = grade.passed ? "PASS" : grade.readerHint()
@@ -57,10 +58,11 @@ func indent(_ text: String) -> String {
 extension Grade {
     /// A short status tag for the header line — the strength verdict in a word.
     func readerHint() -> String {
+        let undetectedNoun = "\(undetected.count) undetected defect\(undetected.count == 1 ? "" : "s")"
         switch strength {
         case .overStrong:     return "OVER-STRONG"
         case .noDefects:      return "no defects"
-        case .nonRefutable:   return "not refutable — \(undetected.count) undetected defect\(undetected.count == 1 ? "" : "s")"
+        case .nonRefutable:   return "not refutable — \(undetectedNoun)"
         case .weak:           return "WEAK — \(detected.count)/\(defectsTotal) detected"
         case .characterizing: return "\(detected.count)/\(defectsTotal) detected"
         }
